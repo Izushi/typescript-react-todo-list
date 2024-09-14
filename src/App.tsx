@@ -12,6 +12,11 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // 入力値が空の場合はアラートを表示して処理を中断
+    if (inputValue.trim() === "") {
+      alert("入力してください");
+      return;
+    }
     const newTodo: Todo = {
       inputValue: inputValue,
       // 配列の長さが0の場合は1を、それ以外の場合は既存のtodos配列の先頭の要素のidに1を加えた値をidとして設定
@@ -34,6 +39,21 @@ function App() {
     setTodos(newTodos);
   };
 
+  const handleChecked = (id: number, checked: boolean) => {
+    const newTodos = todos.map((todo) => {
+      if (todo.id === id) {
+        todo.checked = !checked;
+      }
+      return todo;
+    });
+    setTodos(newTodos);
+  };
+
+  const handleDelete = (id: number) => {
+    const newTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(newTodos);
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   }
@@ -46,6 +66,7 @@ function App() {
             type="text"
             onChange={(e) => { handleChange(e) }}
             className="inputText"
+            value={inputValue}
           />
           <input type="submit" value="作成" className="submitButton" />
         </form>
@@ -57,7 +78,13 @@ function App() {
                 onChange={(e) => { handleEdit(todo.id, e.target.value) }}
                 className="inputText"
                 value={todo.inputValue}
+                disabled={todo.checked}
               />
+              <input
+                type="checkbox"
+                onChange={(e) => { handleChecked(todo.id, todo.checked) }}
+              />
+              <button onClick={() => { handleDelete(todo.id) }}>消</button>
             </li>
           ))}
         </ul>
